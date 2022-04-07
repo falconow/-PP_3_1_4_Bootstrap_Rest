@@ -6,14 +6,14 @@ import com.example.spring313.service.RoleService;
 import com.example.spring313.service.UserService;
 import com.example.spring313.utils.MapperUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/api")
 public class UserRestController {
     private final UserService userService;
     private final RoleService roleService;
@@ -32,6 +32,12 @@ public class UserRestController {
     public List<UserDTO> users() {
         List<UserDTO> usersDTO = userService.getAllUser().stream().map(u -> mapperUser.toUserDTO(u)).toList();
         return usersDTO;
+    }
+
+    @PostMapping(value = "/user")
+    public Long createUser() {
+        logger.info("test");
+        return 1L;
     }
 
 

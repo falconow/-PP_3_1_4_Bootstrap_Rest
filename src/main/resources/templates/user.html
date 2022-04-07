@@ -1,0 +1,104 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Admin Panel</title>
+</head>
+<body>
+
+<!-- Шапка -->
+<div class="container-fluid">
+    <div class="row bg-dark text-white align-items-center">
+
+        <div class="col-11">
+            <div class="row p-2">
+                <h5>
+                    <span class="font-weight-bold" th:text="${user.email}">test1</span>
+                    <span>with roles:</span>
+                    <span th:each="roleauth : ${user.roles}" th:text="${roleauth.role} + ' '"></span>
+                </h5>
+            </div>
+
+        </div>
+
+        <div class="col text-right">
+            <a th:href="@{/logout}" class="font-weight-bold">Logout</a>
+        </div>
+
+
+    </div>
+</div>
+<!-- Основной контент -->
+<div class="row min-vh-100">
+    <!-- Панель навигации -->
+    <div class="col-1">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <!--
+            <a class="nav-link" id="v-pills-admin-tab" data-toggle="pill" href="#v-pills-admin" role="tab" aria-controls="v-pills-admin" aria-selected="true">Admin</a>
+            -->
+            <a class="nav-link active" id="v-pills-user-tab" data-toggle="pill" href="#v-pills-user" role="tab" aria-controls="v-pills-user" aria-selected="false">User</a>
+        </div>
+    </div>
+    <!-- Компоненты навигации -->
+    <div class="col-11 bg-light p-4">
+        <!--  -->
+        <div class="tab-content" id="v-pills-tabContent">
+            <!-- "Элемент навигации Admin -->
+            <div class="tab-pane fade" id="v-pills-admin" role="tabpanel" aria-labelledby="v-pills-admin-tab">
+            </div>
+            <!-- Элемент навигации User -->
+            <div class="tab-pane fade show active" id="v-pills-user" role="tabpanel" aria-labelledby="v-pills-user-tab">
+                <h1>User information-page</h1>
+                <!-- Заголовок -->
+                <div class="border bg-light">
+                    <h5 class="p-3">About user</h5>
+                </div>
+                <div class="p-4 bg-white">
+                    <table class="table table-hover bg-white">
+                        <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last NAme</th>
+                            <th scope="col">Age</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:object="${user}">
+                            <th scope="row" th:utext="*{id}">...</th>
+                            <td th:utext="*{firstName}">...</td>
+                            <td th:utext="*{lastName}">...</td>
+                            <td th:utext="*{age}">...</td>
+                            <td th:utext="*{email}">...</td>
+                            <td>
+                                <span th:each="roleauth : ${user.roles}" th:text="${roleauth.role} + ' '"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

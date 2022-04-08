@@ -1,19 +1,22 @@
 package com.example.spring313.controllers;
 
 import com.example.spring313.dto.UserDTO;
+import com.example.spring313.model.Role;
 import com.example.spring313.model.User;
 import com.example.spring313.service.RoleService;
 import com.example.spring313.service.UserService;
 import com.example.spring313.utils.MapperUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/admin")
 public class UserRestController {
     private final UserService userService;
     private final RoleService roleService;
@@ -34,10 +37,28 @@ public class UserRestController {
         return usersDTO;
     }
 
+
+    @GetMapping(value = "/user/{id}")
+    public UserDTO getUser (@PathVariable("id") Long id) {
+        User user = userService.findUserById(id);
+        return mapperUser.toUserDTO(user);
+    }
+
     @PostMapping(value = "/user")
-    public Long createUser() {
-        logger.info("test");
-        return 1L;
+    public UserDTO createUser(@ModelAttribute User user, @RequestParam(required = false, value = "role") List<Long> selectRoles) {
+        List<Role> roles = new ArrayList<>();
+        if (selectRoles != null && !selectRoles.isEmpty()) {
+            roles = selectRoles.stream().map(roleService::findRoleById).toList();
+        }
+        user.setCollectionsRoles(roles);
+        userService.addUser(user);
+        return mapperUser.toUserDTO(user);
+    }
+
+    @DeleteMapping(value = "/user/{id}")
+    public Long deleteUser (@PathVariable("id") Long id) {
+        userService.deleteUser(id);
+        return id;
     }
 
 

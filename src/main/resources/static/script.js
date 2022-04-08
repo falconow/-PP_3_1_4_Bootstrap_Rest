@@ -1,27 +1,8 @@
 $(document).ready(getusers());
 
-$('#formNewUser').on('submit', function (e) {
-    alert(JSON.stringify($(this)));
-    var test = '{"id":1,"roles":["ROLE_USER","ROLE_ADMIN"],"password":"$2a$10$gCBF/5W2ezOzOoF0eZn8fuHlE4ZCAV1n4ZLa471JQStMDvX9WGbQ.","firstName":"Admin","lastName":"Admin","age":"29","email":"admin"}';
-
-    $.ajax({
-        method: 'POST',
-        url: '/api/user',
-        // The key needs to match your method's input parameter (case-sensitive).
-        data: test,
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function(data){alert(data);},
-        error: function(errMsg) {
-            alert("errr");
-        }
-    });
-})
-
-
 function getusers() {
     $.ajax({
-        url: '/api/users',         /* Куда пойдет запрос */
+        url: '/admin/users',         /* Куда пойдет запрос */
         method: 'get',             /* Метод передачи (post или get) */
         dataType: 'json',          /* Тип данных в ответе (xml, json, script, html). */
         data: {},     /* Параметры передаваемые в запросе. */
@@ -40,12 +21,80 @@ function getusers() {
                 });
                 tr.append('<td>' + role + '</td>')
                     .append('<td><button type="button" class="btn btn-info" data-toggle="modal">Edit</button></td>')
-                    .append('<td><button type="button" class="btn btn-danger" data-toggle="modal">Delete</button></td>');
+                    .append('<td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#DeleteModal" data-whatever="'+ element["id"] +'">Delete</button></td>');
                 $('#table').append(tr)
             })
         }
     });
 }
+
+$('#formNewUser').on('submit', function (e) {
+    e.preventDefault();
+    $.ajax({
+        method: 'POST',
+        url: '/admin/user',
+        // The key needs to match your method's input parameter (case-sensitive).
+        data: $(this).serialize(),
+        //contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(data){alert(data);},
+        error: function(errMsg) {
+            alert("errr");
+        }
+    });
+})
+
+$('#DeleteModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var id = button.data('whatever') // Extract info from data-* attributes
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var modal = $(this)
+    $.ajax({
+        method: 'GET',
+        url: '/admin/user/'+id,
+        async: false,
+        // The key needs to match your method's input parameter (case-sensitive).
+        data: {},
+        //contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(data) {
+            $(this )
+            var role = '';
+            data["roles"].forEach(function(element, key){
+                role = role + '<option>'+ element +'</option>';
+            });
+            modal.find('.modal-body #DelId').val(data["id"])
+            modal.find('.modal-body #DelFirstName').val(data["firstName"])
+            modal.find('.modal-body #DelLastName').val(data["lastName"])
+            modal.find('.modal-body #DelAge').val(data["age"])
+            modal.find('.modal-body #DelEmail').val(data["email"])
+            modal.find('.modal-body #DelRole').html(role)
+        },
+        error: function(errMsg) {
+            alert("errr");
+        }
+    });
+})
+
+$('#formDelUser').on('submit', function (e) {
+    e.preventDefault();
+    var id = $('#formDelUser #DelId').val()
+    $.ajax({
+        type: 'DELETE',
+        url: '/admin/user/'+id,
+        // The key needs to match your method's input parameter (case-sensitive).
+        data: {},
+        //contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(data){alert(data);},
+        error: function(errMsg) {
+            alert("errr");
+        }
+    });
+})
+
+
 
 
 $('#street').on('click', function() {

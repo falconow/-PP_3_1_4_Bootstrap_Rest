@@ -98,7 +98,7 @@
                         </div>
                         <!-- Форма ввода нового пользователя -->
                         <div class="bg-white d-flex justify-content-center text-center">
-                            <form class="col-3 p-2" id="formNewUser">
+                            <form class="col-3 p-2" id="formNewUser" th:method="POST" th:action="@{/test}">
                                 <div class="form-group">
                                     <label class="font-weight-bold " for="FirstName">First Name</label>
                                     <input type="text" class="form-control" id="FirstName" name="FirstName">
@@ -169,7 +169,7 @@
     </div>
 
     <!-- Модальное окно для удаления-->
-    <div th:each="user : ${listUsers}" class="modal fade" th:id="${'Delete' + user.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -178,33 +178,33 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form class="container-fluid text-center" th:action="@{/admin/delete/{id}(id = ${user.id})}" th:method="DELETE">
+                <form id="formDelUser" class="container-fluid text-center" th:action="@{/test}" th:method="DELETE">
                     <div class="modal-body">
                         <fieldset disabled>
                             <div class="form-group">
                                 <label class="font-weight-bold ">ID</label>
-                                <input type="text" class="form-control" name="id" th:value="${user.id}">
+                                <input type="text" class="form-control" name="id" id="DelId" value="test">
                             </div>
                             <div class="form-group">
                                 <label class="font-weight-bold " >First Name</label>
-                                <input type="text" class="form-control" name="FirstName" th:value="${user.firstName}">
+                                <input type="text" class="form-control" name="FirstName" id="DelFirstName" value="test">
                             </div>
                             <div class="form-group">
                                 <label class="font-weight-bold">Last Name</label>
-                                <input type="text" class="form-control" name="LastName" th:value="${user.lastName}">
+                                <input type="text" class="form-control" name="LastName" id="DelLastName" value="test">
                             </div>
                             <div class="form-group">
                                 <label class="font-weight-bold" >Age</label>
-                                <input type="text" class="form-control" name="Age" th:value="${user.age}">
+                                <input type="text" class="form-control" name="Age" id="DelAge" value="test">
                             </div>
                             <div class="form-group">
                                 <label class="font-weight-bold">Email</label>
-                                <input type="email" class="form-control" name="Email" placeholder="name@example.com" th:value="${user.email}">
+                                <input type="email" class="form-control" name="Email" id="DelEmail" placeholder="name@example.com" value="test">
                             </div>
                             <div class="form-group">
                                 <label class="font-weight-bold" for="Role">Role</label>
-                                <select multiple class="form-control" name="Role">
-                                    <option th:each="role : ${user.roles}" th:value="${role.id}" th:text="${role.role}">...</option>
+                                <select multiple class="form-control" name="Role" id="DelRole">
+                                    <option>...</option>
                                 </select>
                             </div>
                         </fieldset>

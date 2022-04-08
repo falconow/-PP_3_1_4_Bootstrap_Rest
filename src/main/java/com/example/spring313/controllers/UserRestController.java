@@ -57,8 +57,22 @@ public class UserRestController {
 
     @DeleteMapping(value = "/user/{id}")
     public Long deleteUser (@PathVariable("id") Long id) {
+        logger.info("delete");
         userService.deleteUser(id);
         return id;
+    }
+
+    //Изменение пользователя
+    @PutMapping(value = "/user/{id}")
+    public UserDTO editUser(@ModelAttribute User user, @RequestParam(required = false, value = "Role") List<Long> selectRoles) {
+        List<Role> roles = new ArrayList<>();
+        if (selectRoles != null && !selectRoles.isEmpty()) {
+            roles = selectRoles.stream().map(roleService::findRoleById).toList();
+        }
+
+        user.setCollectionsRoles(roles);
+        userService.updateUser(user);
+        return mapperUser.toUserDTO(user);
     }
 
 

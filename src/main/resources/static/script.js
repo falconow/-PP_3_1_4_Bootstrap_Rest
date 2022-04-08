@@ -1,5 +1,6 @@
 $(document).ready(getusers());
 
+//Получение пользователей
 function getusers() {
     $.ajax({
         url: '/admin/users',         /* Куда пойдет запрос */
@@ -20,7 +21,7 @@ function getusers() {
                     role = role + element + ' ';
                 });
                 tr.append('<td>' + role + '</td>')
-                    .append('<td><button type="button" class="btn btn-info" data-toggle="modal">Edit</button></td>')
+                    .append('<td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#EditModal" data-whatever="'+ element["id"] +'">Edit</button></td>')
                     .append('<td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#DeleteModal" data-whatever="'+ element["id"] +'">Delete</button></td>');
                 $('#table').append(tr)
             })
@@ -28,38 +29,46 @@ function getusers() {
     });
 }
 
+//Обновление списка пользователей
+function updateTable() {
+    $('#table').html('')
+    getusers();
+}
+
+//Создание пользователя
 $('#formNewUser').on('submit', function (e) {
     e.preventDefault();
     $.ajax({
         method: 'POST',
         url: '/admin/user',
-        // The key needs to match your method's input parameter (case-sensitive).
         data: $(this).serialize(),
-        //contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function(data){alert(data);},
+        success: function(data){
+            updateTable()
+            $('#nav-new-user').removeClass("show active")
+            $('#nav-new-user-tab').removeClass("active")
+            $('#nav-user-table').addClass("show active")
+            $('#nav-user-table-tab').addClass("active")
+        },
         error: function(errMsg) {
-            alert("errr");
+            alert("Error create User!");
         }
     });
+
 })
 
+//Модальное окно удаления пользователя
 $('#DeleteModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget) // Button that triggered the modal
-    var id = button.data('whatever') // Extract info from data-* attributes
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var button = $(event.relatedTarget)
+    var id = button.data('whatever')
     var modal = $(this)
     $.ajax({
         method: 'GET',
         url: '/admin/user/'+id,
         async: false,
-        // The key needs to match your method's input parameter (case-sensitive).
         data: {},
-        //contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function(data) {
-            $(this )
             var role = '';
             data["roles"].forEach(function(element, key){
                 role = role + '<option>'+ element +'</option>';
@@ -77,162 +86,75 @@ $('#DeleteModal').on('show.bs.modal', function (event) {
     });
 })
 
-$('#formDelUser').on('submit', function (e) {
-    e.preventDefault();
-    var id = $('#formDelUser #DelId').val()
+//Модальное окно редактирования пользователя
+$('#EditModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget)
+    var id = button.data('whatever')
+    var modal = $(this)
     $.ajax({
-        type: 'DELETE',
+        method: 'GET',
         url: '/admin/user/'+id,
-        // The key needs to match your method's input parameter (case-sensitive).
+        async: false,
         data: {},
-        //contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function(data){alert(data);},
+        success: function(data) {
+            var role = '';
+            modal.find('#EditRole option').removeAttr('selected')
+            data["roles"].forEach(function(element, key){
+                $('#' + element).attr('selected', 'selected');
+            });
+            modal.find('.modal-body #EditId').val(data["id"])
+            modal.find('.modal-body #EditFirstName').val(data["firstName"])
+            modal.find('.modal-body #EditLastName').val(data["lastName"])
+            modal.find('.modal-body #EditAge').val(data["age"])
+            modal.find('.modal-body #EditEmail').val(data["email"])
+            modal.find('.modal-body #EditPassword').val('')
+            //modal.find('.modal-body #EditRole').html(role)
+        },
         error: function(errMsg) {
             alert("errr");
         }
     });
 })
 
-
-
-
-$('#street').on('click', function() {
-    // действия, которые будут выполнены при наступлении события...
-    $('#switch').html("");
-    $('#content3').html(""); 
-});
-
-$('#house').on('click', function() {
-    // действия, которые будут выполнены при наступлении события...
-    $('#switch').html("");
-    $('#content3').html(""); 
-});
-
-$('#switch').on('click', function() {
-    // действия, которые будут выполнены при наступлении события...   
-    $('#content3').html(""); 
-});
-
-
-$('#content').on('click', '#get-switch', function(e){
+//Удаление пользователя
+$('#formDelUser').on('submit', function (e) {
     e.preventDefault();
-    var street =$('#street').val();
-    var house =$('#house').val();
+    var id = $('#formDelUser #DelId').val()
     $.ajax({
-        url: '/ipoe/api/api.php?action=getSwitch',         /* Куда пойдет запрос */
-        method: 'GET',             /* Метод передачи (post или get) */
-        dataType: 'html',          /* Тип данных в ответе (xml, json, script, html). */
-        data: {street: street, house: house},     /* Параметры передаваемые в запросе. */
-        success: function(data){   /* функция которая будет выполнена после успешного запроса.  */            
-            $('#switch').html(data);           /* В переменной data содержится ответ от index.php. */
-        }
-    }); 
-})
-
-$('#content2').on('click', '#get-ports', function(e){
-    e.preventDefault();
-    var house =$('#switch').val();
-    $.ajax({
-        url: '/ipoe/api/api.php?action=getPorts',         /* Куда пойдет запрос */
-        method: 'GET',             /* Метод передачи (post или get) */
-        dataType: 'html',          /* Тип данных в ответе (xml, json, script, html). */
-        data: {idhouse: house},     /* Параметры передаваемые в запросе. */
-        success: function(data){   /* функция которая будет выполнена после успешного запроса.  */                   
-            $('#content3').html(data);           /* В переменной data содержится ответ от index.php. */
-        }
-    });     
-})
-
-// Создание vlan
-$('#content3').on("click",'.add', function(event){
-    var number = $(this).parent().prev().html();
-    if (number == '0' || number<500000) {
-        alert("Некорректный Лицевой счёт!");
-        return;        
-    }
-
-
-    var res='';
-    $.ajax({
-        async: false,
-        url: '/ipoe/api/api.php',         /* Куда пойдет запрос */
-        method: 'POST',             /* Метод передачи (post или get) */
-        dataType: 'json',          /* Тип данных в ответе (xml, json, script, html). */
-        data: {number: number, id: event.target.id, action:"addVlan"},     /* Параметры передаваемые в запросе. */
-        success: function(data){   /* функция которая будет выполнена после успешного запроса.  */                   
-            //alert(data);           /* В переменной data содержится ответ от index.php. */ 
-            if (data["status"] != "ok") {
-                alert(data["text"]);
-                res = "error";
-            }                   
+        method: 'DELETE',
+        url: '/admin/user/'+id,
+        data: $(this).serialize(),
+        dataType: "json",
+        success: function(data){
+            $('#DeleteModal').modal('hide')
+            updateTable()
         },
-        error: function(data){
-            alert("Vlan не создан!");
+        error: function(errMsg) {
+            alert("Error Delete!");
         }
-     });
+    });
+})
 
-     if (res == "error") {return};
+//Редактирование пользователя
+$('#formEditUser').on('submit', function (e) {
+    e.preventDefault();
+    var id = $('#formEditUser #EditId').val()
+    $.ajax({
+        method: 'PUT',
+        url: '/admin/user/'+id,
+        data: $(this).serialize(),
+        dataType: "json",
+        success: function(data){
+            $('#EditModal').modal('hide')
+            updateTable()
+        },
+        error: function(errMsg) {
+            alert("Error Edit!");
+        }
+    });
+})
 
-     $(this).parent().parent().attr("class","");
-     $(this).attr("class","del btn btn-outline-danger");
-     $(this).html("Del");
- 
-
-
-});
-
-// Удаление vlan
-$('#content3').on("click",'.del', function(event){
-    var number = $(this).parent().prev().html();
-    if (number == '0') {
-        alert("Не указан Лицевой счёт!");
-        return;        
-    }
-
-    var question = prompt('Удалить vlan?', '');
-
-    if (question == 'Yes') {
-
-        var res='';       
-        $.ajax({
-            async: false,
-            url: '/ipoe/api/api.php',         /* Куда пойдет запрос */
-            method: 'POST',             /* Метод передачи (post или get) */
-            dataType: 'json',          /* Тип данных в ответе (xml, json, script, html). */
-            data: {id: event.target.id, action:"delVlan"},     /* Параметры передаваемые в запросе. */
-            success: function(data){   /* функция которая будет выполнена после успешного запроса.  */                   
-                //alert(data);           /* В переменной data содержится ответ от index.php. */
-                if (data["status"] != "ok") {
-                    alert(data["text"]);
-                    res = "error";
-                } 
-
-            },
-            error: function(data){
-                alert("Vlan не удален!");
-            }
-        });
-
-        if (res == "error") {return};  
-
-         $(this).parent().parent().attr("class","table-success");
-         $(this).parent().prev().html(0);
-         $(this).attr("class","add btn btn-outline-success");
-         $(this).html("Add");
-    }
-    
-});
-
-// Ввод нового Л/с
-$('#content3').on("click",'.edit', function(event){
-    var value = prompt('Введите лицевой счет', '');
-    if ($.isNumeric(value) && value != '0' && value != null && value !='') {
-        $(this).html(value); 
-        $(this).parent().attr("class","table-warning");  
-    }; 
-   
-});
 
 
 
